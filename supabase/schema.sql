@@ -27,13 +27,15 @@ create table if not exists public.site_media (
   tag         text        not null default '',
   title       text        not null default '',
   sort_order  integer     not null default 0,
-  -- parallax & tampilan
+-- parallax & tampilan
   data_speed  real        not null default 0,
   width       integer     not null default 200,
+  -- "left" dan "right" adalah nama fungsi bawaan SQL, jadi wajib
+  -- ditulis di antara tanda kutip ganda agar bisa dipakai sebagai kolom.
   top         text        not null default '',
   bottom      text        not null default '',
-  left        text        not null default '',
-  right       text        not null default '',
+  "left"      text        not null default '',
+  "right"     text        not null default '',
   rotate      real        not null default 0,
   opacity     real        not null default 0.85,
   created_at  timestamptz not null default now(),
@@ -48,7 +50,7 @@ comment on table  public.site_media is 'Pustaka media situs. Ditulis hanya lewat
 
 -- ────────────────────────────────────────────────────────────
 --  3. Row Level Security
---     matured: anon HANYA boleh baca. Semua tulisan ditolak untuk
+--     Aturan: anon HANYA boleh baca. Semua tulisan ditolak untuk
 --     anon key dan hanya bisa lewat service role di route admin,
 --     yang lebih dulu memeriksa ADMIN_TOKEN.
 -- ────────────────────────────────────────────────────────────

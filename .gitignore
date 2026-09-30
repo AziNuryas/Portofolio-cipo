@@ -23,6 +23,9 @@ node_modules/
 # production
 /build
 
+# supabase CLI (kredensial & cache lokal)
+/supabase/.temp/
+
 # misc
 .DS_Store
 *.pem

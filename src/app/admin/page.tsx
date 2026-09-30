@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { SiteContent, SiteMedia } from "@/lib/content/types";
 import { DEFAULT_CONTENT, DEFAULT_MEDIA } from "@/lib/content/defaults";
 import ContentEditor from "./_parts/ContentEditor";
 import MediaEditor from "./_parts/MediaEditor";
+import Sidebar from "./_parts/Sidebar";
+import { unchangedSections, type SectionId } from "./_parts/sections";
 import "./admin.css";
 
 const TOKEN_KEY = "ad_token";
@@ -22,13 +24,34 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
 
   const [tab, setTab] = useState<Tab>("content");
+  const [section, setSection] = useState<SectionId>("hero");
   const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
+  const [saved, setSaved] = useState<SiteContent>(DEFAULT_CONTENT);
   const [media, setMedia] = useState<SiteMedia[]>(DEFAULT_MEDIA);
 
   const [mediaFromDb, setMediaFromDb] = useState(false);
   const [canWrite, setCanWrite] = useState(true);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<Status>(null);
+
+  /** Bagian yang berbeda dari isi database terakhir. */
+  const edited = useMemo(
+    () => [...unchangedSections(saved)].filter(id => unchangedSections(content).has(id)),
+    [saved, content],
+  );
+  const dirty = edited.length > 0;
+
+  /** Peringatan sebelum menutup tab dengan perubahan yang belum disimpan. */
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+
+  const blockedReason = canWrite
+    ? undefined
+    : "Penyimpanan ditolak: SUPABASE_SERVICE_ROLE_KEY belum diisi di .env.local. Isi kuncinya di Supabase Dashboard → Project Settings → API, lalu restart server.";
 
   const authHeaders = useCallback(
     (json = false): HeadersInit => ({
@@ -54,6 +77,7 @@ export default function AdminPage() {
     const json = await res.json().catch(() => ({}));
     if (json.ok) {
       setContent(json.content ?? DEFAULT_CONTENT);
+      setSaved(json.content ?? DEFAULT_CONTENT);
       setCanWrite(json.canWrite !== false);
     } else {
       setStatus({ tone: "bad", text: json.error ?? "Gagal membaca konten." });
@@ -136,11 +160,12 @@ export default function AdminPage() {
       body: JSON.stringify({ content }),
     });
     const json = await res.json().catch(() => ({}));
-    setStatus(
-      res.ok && json.ok
-        ? { tone: "ok", text: "Konten tersimpan. Buka beranda untuk melihat hasilnya." }
-        : { tone: "bad", text: json.error ?? "Gagal menyimpan." },
-    );
+    if (res.ok && json.ok) {
+      setSaved(content);
+      setStatus({ tone: "ok", text: "Konten tersimpan. Buka beranda untuk melihat hasilnya." });
+    } else {
+      setStatus({ tone: "bad", text: json.error ?? "Gagal menyimpan." });
+    }
     setBusy(false);
   };
 
@@ -224,15 +249,37 @@ export default function AdminPage() {
         </p>
       )}
 
-      {tab === "content" ? (
-        <ContentEditor value={content} onChange={setContent} />
-      ) : (
-        <MediaEditor media={media} onReload={loadMedia} onPersistAll={persistAll} busy={busy} />
-      )}
+      <div className={tab === "content" ? "ad-body" : "ad-body solo"}>
+        {tab === "content" && (
+          <Sidebar
+            active={section}
+            onChange={setSection}
+            content={content}
+            disabled={busy}
+          />
+        )}
+
+        {tab === "content" ? (
+          <ContentEditor section={section} value={content} onChange={setContent} />
+        ) : (
+          <MediaEditor
+            media={media}
+            onReload={loadMedia}
+            onPersistAll={persistAll}
+            busy={busy}
+            blockedReason={blockedReason}
+          />
+        )}
+      </div>
 
       {tab === "content" && (
         <footer className="ad-save">
-          <button className="ad-primary" onClick={() => void saveContent()} disabled={busy}>
+          <span className="ad-save-info">
+            {dirty
+              ? `${edited.length} bagian belum tersimpan: ${edited.join(", ")}.`
+              : "Semua perubahan tersimpan."}
+          </span>
+          <button className="ad-primary" onClick={() => void saveContent()} disabled={busy || !dirty}>
             {busy ? "Menyimpan…" : "Simpan konten"}
           </button>
         </footer>

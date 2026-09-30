@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { cache } from "react";
 import { DEFAULT_CONTENT, DEFAULT_MEDIA } from "../content/defaults";
+import { mergeMedia } from "../content/merge";
 import type { MediaRow, SiteContent, SiteData, SiteMedia } from "../content/types";
 
 export const BUCKET = "portfolio";
@@ -94,7 +95,7 @@ export const loadSiteData = cache(async (): Promise<SiteData> => {
 
     return {
       content: { ...DEFAULT_CONTENT, ...contentRow },
-      media: mediaRows.length ? mediaRows.map(rowToMedia) : DEFAULT_MEDIA,
+      media: mergeMedia(mediaRows.map(rowToMedia)),
       fromDatabase: true,
     };
   } catch {

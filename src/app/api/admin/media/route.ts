@@ -9,10 +9,12 @@ import {
 } from "@/lib/supabase/server";
 import type { MediaKind, MediaRow, SiteMedia } from "@/lib/content/types";
 import { DEFAULT_MEDIA } from "@/lib/content/defaults";
+import { mergeMedia } from "@/lib/content/merge";
 
 export const dynamic = "force-dynamic";
 
 const KINDS: MediaKind[] = ["profile", "hero", "sticker", "gallery"];
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_BYTES = 8 * 1024 * 1024;
 
 function rowToMedia(r: MediaRow): SiteMedia {
@@ -68,7 +70,7 @@ export async function GET(req: NextRequest) {
   const rows = (data as MediaRow[] | null) ?? [];
   return Response.json({
     ok: true,
-    media: rows.length ? rows.map(rowToMedia) : DEFAULT_MEDIA,
+    media: mergeMedia(rows.map(rowToMedia)),
     fromDatabase: rows.length > 0,
   });
 }
@@ -149,6 +151,68 @@ export async function POST(req: NextRequest) {
   }
 
   const { data: pub } = supa.storage.from(BUCKET).getPublicUrl(path);
+
+  /* ── Mode 3: ganti berkas pada bingkai yang sudah ada.
+        Dipakai tombol "Ganti foto" di panel. Urutannya:
+          1. cari baris DB yang cocok — berdasarkan id, atau
+             berdasarkan identitas bingkai (jenis + slot + urutan),
+          2. perbarui baris itu, atau buat baru kalau memang belum
+             ada (misalnya bingkai yang masih memakai berkas bawaan),
+          3. hapus objek lama di storage. ── */
+  const replaceId = str(form.get("replaceId"));
+  if (replaceId) {
+    const sortOrder = num(form.get("sortOrder"));
+
+    const byId = UUID_RE.test(replaceId)
+      ? await supa.from("site_media").select("*").eq("id", replaceId).maybeSingle()
+      : { data: null, error: null };
+
+    if (byId.error) {
+      await supa.storage.from(BUCKET).remove([path]);
+      return Response.json({ ok: false, error: byId.error.message }, { status: 500 });
+    }
+
+    // Belum ada baris dengan id itu? Coba cari lewat identitas bingkai.
+    let existing = byId.data;
+    if (!existing) {
+      const byKey = await supa
+        .from("site_media")
+        .select("*")
+        .eq("kind", kind)
+        .eq("slot", slot)
+        .eq("sort_order", sortOrder)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (byKey.error) {
+        await supa.storage.from(BUCKET).remove([path]);
+        return Response.json({ ok: false, error: byKey.error.message }, { status: 500 });
+      }
+      existing = byKey.data;
+    }
+
+    const saved = existing
+      ? await supa.from("site_media").update({ ...metadata, sort_order: sortOrder, url: pub.publicUrl })
+          .eq("id", existing.id).select().single()
+      : await supa.from("site_media")
+          .insert({ ...metadata, sort_order: sortOrder, url: pub.publicUrl })
+          .select().single();
+
+    if (saved.error) {
+      await supa.storage.from(BUCKET).remove([path]);
+      return Response.json({ ok: false, error: saved.error.message }, { status: 500 });
+    }
+
+    // Bersihkan berkas lama kalau memang milik bucket ini.
+    const oldPath = existing ? pathFromUrl((existing as MediaRow).url) : null;
+    if (oldPath) {
+      await supa.storage.from(BUCKET).remove([oldPath]).catch(() => undefined);
+    }
+
+    return Response.json({ ok: true, media: rowToMedia(saved.data as MediaRow), created: !existing });
+  }
+
   const ins = await supa.from("site_media").insert({ ...metadata, url: pub.publicUrl }).select().single();
 
   if (ins.error) {
