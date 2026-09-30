@@ -16,6 +16,12 @@
   --line: rgba(214, 20, 106, 0.16);
   --shadow: 0 20px 60px -22px rgba(214, 20, 106, 0.4);
   --shadow-sm: 0 8px 30px -8px rgba(214, 20, 106, 0.3);
+}
+
+/* next/font memasang --font-fraunces dkk. pada <body>, jadi alias-nya
+   harus ikut di body. Kalau ditaruh di :root, var(--font-fraunces)
+   kosong di sana dan seluruh situs jatuh ke font sistem. */
+body {
   --font-sans: var(--font-plus-jakarta-sans), 'Plus Jakarta Sans', sans-serif;
   --font-serif: var(--font-fraunces), 'Fraunces', serif;
   --font-mono: var(--font-space-mono), 'Space Mono', monospace;
@@ -460,26 +466,92 @@ section { position: relative; padding: 140px 0; }
    EDUCATION
 ================================================ */
 .edu-card {
-  background: #fff; border: 2px solid var(--line);
-  border-radius: 24px; padding: 40px;
-  box-shadow: var(--shadow-sm); position: relative;
-  display: flex; justify-content: space-between; align-items: center;
-  overflow: hidden; max-width: 800px;
+  --gold-1: #f7e6ad; --gold-2: #d4af37; --gold-3: #a8801a;
+  position: relative; max-width: 880px;
+  padding: 52px 48px; border-radius: 28px;
+  display: flex; justify-content: space-between; align-items: center; gap: 44px;
+  overflow: hidden; color: #f6eef1;
+  background:
+    radial-gradient(ellipse 90% 70% at 12% 0%, rgba(214, 20, 106, .26), transparent 60%),
+    radial-gradient(ellipse 80% 70% at 92% 105%, rgba(79, 194, 168, .20), transparent 62%),
+    linear-gradient(158deg, #331924 0%, #1d0e14 52%, #2a1420 100%);
+  box-shadow: 0 34px 74px -34px rgba(43, 22, 34, .65), 0 0 0 1px rgba(255, 255, 255, .07);
 }
+/* pola guilloche */
 .edu-card::before {
-  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px;
-  background: linear-gradient(180deg, var(--rose-deep), var(--mint));
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    repeating-linear-gradient(56deg, rgba(255, 255, 255, .030) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(-56deg, rgba(255, 255, 255, .030) 0 1px, transparent 1px 9px);
 }
-.edu-content { max-width: 500px; }
-.edu-content h3 { font-size: 1.8rem; font-weight: 700; color: var(--rose-deep); margin-bottom: 8px; }
-.edu-school { font-family: var(--font-sans); font-weight: 600; font-size: 1.1rem; display: block; margin-bottom: 4px; }
-.edu-year { font-family: var(--font-mono); font-size: .8rem; color: var(--mint-deep); display: block; margin-bottom: 16px; }
-.edu-content p { color: rgba(43,22,34,.7); line-height: 1.6; }
-.edu-stamp {
-  font-family: var(--font-hand); font-size: 3.5rem; color: rgba(214,20,106,.15);
-  transform: rotate(-15deg); border: 4px solid rgba(214,20,106,.15);
-  border-radius: 12px; padding: 4px 16px; font-weight: 700;
-  user-select: none;
+/* sapuan cahaya */
+.edu-card::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 32%, rgba(255, 255, 255, .07) 47%, transparent 62%);
+}
+/* bingkai emas + ornamen sudut */
+.edu-frame {
+  position: absolute; inset: 13px; pointer-events: none; z-index: 1;
+  border: 1px solid rgba(212, 175, 55, .30); border-radius: 18px;
+}
+.cnr { position: absolute; width: 16px; height: 16px; border: 1.5px solid rgba(212, 175, 55, .62); }
+.cnr.tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; border-radius: 6px 0 0 0; }
+.cnr.tr { top: 8px; right: 8px; border-left: 0; border-bottom: 0; border-radius: 0 6px 0 0; }
+.cnr.bl { bottom: 8px; left: 8px; border-right: 0; border-top: 0; border-radius: 0 0 0 6px; }
+.cnr.br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; border-radius: 0 0 6px 0; }
+
+.edu-content { position: relative; z-index: 2; max-width: 560px; }
+.edu-label {
+  display: inline-block; margin-bottom: 16px; padding: 5px 12px;
+  font-family: var(--font-mono); font-size: .64rem; font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--gold-1);
+  border: 1px solid rgba(212, 175, 55, .38); border-radius: 999px;
+  background: rgba(212, 175, 55, .10);
+}
+.edu-content h3 {
+  font-size: 2.15rem; font-weight: 700; line-height: 1.1; margin-bottom: 10px;
+  background: linear-gradient(100deg, #f9ecc4 0%, var(--gold-2) 36%, var(--gold-3) 60%, #f4e3ae 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.edu-school {
+  display: block; margin-bottom: 26px;
+  font-family: var(--font-sans); font-weight: 600; font-size: 1.08rem;
+  color: rgba(246, 238, 241, .82);
+}
+.edu-meta {
+  list-style: none; margin: 0 0 22px; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 14px 34px;
+}
+.edu-meta li { position: relative; display: flex; flex-direction: column; gap: 4px; }
+.edu-meta li + li::before {
+  content: ""; position: absolute; left: -17px; top: 5px; bottom: 5px; width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(212, 175, 55, .45), transparent);
+}
+.edu-meta b { font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700; line-height: 1; color: var(--gold-1); }
+.edu-meta span {
+  font-family: var(--font-mono); font-size: .62rem; letter-spacing: .16em;
+  text-transform: uppercase; color: rgba(246, 238, 241, .55);
+}
+.edu-desc { margin: 0; max-width: 52ch; font-size: .97rem; line-height: 1.72; color: rgba(246, 238, 241, .74); }
+
+.edu-seal {
+  position: relative; z-index: 2; flex: none;
+  width: 152px; height: 152px; border-radius: 50%;
+  display: grid; place-items: center; transform: rotate(-9deg);
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, .34), transparent 48%),
+    conic-gradient(from 205deg, var(--gold-3), var(--gold-1) 12%, var(--gold-2) 26%, #8a6414 44%, #f4e3ae 58%, var(--gold-2) 74%, var(--gold-3) 100%);
+  box-shadow: 0 20px 46px -16px rgba(0, 0, 0, .75), inset 0 1px 0 rgba(255, 255, 255, .4);
+}
+.edu-seal::before {
+  content: ""; position: absolute; inset: 7px; border-radius: 50%;
+  border: 1px solid rgba(58, 26, 38, .42);
+  box-shadow: inset 0 0 0 4px rgba(58, 26, 38, .16);
+}
+.edu-seal span {
+  font-family: var(--font-mono); font-size: .95rem; font-weight: 700;
+  letter-spacing: .3em; text-indent: .3em; color: #3a1a26;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .28);
 }
 
 /* ================================================
@@ -821,16 +893,24 @@ footer {
 
   /* ─── PENDIDIKAN MOBILE ─── */
   .edu-card {
-    flex-direction: column;
-    padding: 20px 18px;
-    gap: 14px;
-    border-radius: 18px;
-    max-width: 100%;
+    flex-direction: column; align-items: flex-start;
+    padding: 30px 22px 26px; gap: 28px;
+    border-radius: 20px; max-width: 100%;
   }
   .edu-content { max-width: 100%; }
-  .edu-content h3 { font-size: 1.3rem; }
-  .edu-school { font-size: .95rem; }
-  .edu-stamp { align-self: flex-start; font-size: 2rem; transform: rotate(-8deg); border-width: 3px; padding: 2px 10px; }
+  .edu-label { font-size: .58rem; letter-spacing: .16em; margin-bottom: 12px; }
+  .edu-content h3 { font-size: 1.5rem; }
+  .edu-school { font-size: .95rem; margin-bottom: 20px; }
+  .edu-meta { gap: 12px 26px; }
+  .edu-meta li + li::before { left: -13px; }
+  .edu-meta b { font-size: 1.1rem; }
+  .edu-desc { font-size: .9rem; }
+  .edu-seal {
+    align-self: flex-end; width: 96px; height: 96px;
+    box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .4);
+  }
+  .edu-seal::before { inset: 5px; }
+  .edu-seal span { font-size: .6rem; letter-spacing: .24em; }
 
   /* ─── TIMELINE MOBILE ─── */
   .timeline { padding-left: 22px; }

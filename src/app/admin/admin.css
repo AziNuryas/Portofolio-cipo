@@ -1,0 +1,343 @@
+/* ════════════════════════════════════════════════════════════
+   Panel admin — gayanya sendiri, tidak memakai palet situs supaya
+   jelas terpisah dari halaman publik.
+   ════════════════════════════════════════════════════════════ */
+
+.ad-shell,
+.ad-login {
+  --ad-bg: #0e1117;
+  --ad-panel: #161b24;
+  --ad-panel2: #1d2430;
+  --ad-line: #2a3441;
+  --ad-text: #e6edf3;
+  --ad-dim: #8b98a9;
+  --ad-accent: #ff2d78;
+  --ad-ok: #4fc2a8;
+  --ad-bad: #ff6b6b;
+
+  min-height: 100vh;
+  background: var(--ad-bg);
+  color: var(--ad-text);
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+
+/* ── Login ── */
+.ad-login {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.ad-login-box {
+  width: 100%;
+  max-width: 420px;
+  background: var(--ad-panel);
+  border: 1px solid var(--ad-line);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ad-login-box h1 { font-size: 1.5rem; margin: 0; }
+.ad-login-box p { margin: 0; color: var(--ad-dim); font-size: .9rem; line-height: 1.6; }
+.ad-login-box input {
+  background: var(--ad-bg);
+  border: 1px solid var(--ad-line);
+  color: var(--ad-text);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 1rem;
+}
+.ad-back { color: var(--ad-dim); font-size: .85rem; text-decoration: none; }
+.ad-back:hover { color: var(--ad-text); }
+
+/* ── Kerangka ── */
+.ad-shell { max-width: 1080px; margin: 0 auto; padding: 0 20px 120px; }
+.ad-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--ad-line);
+  position: sticky;
+  top: 0;
+  background: var(--ad-bg);
+  z-index: 10;
+}
+.ad-top h1 { font-size: 1.25rem; margin: 0; }
+.ad-top-actions { display: flex; gap: 8px; }
+
+.ad-tabs { display: flex; gap: 6px; padding: 20px 0 8px; }
+.ad-tabs button {
+  background: var(--ad-panel);
+  border: 1px solid var(--ad-line);
+  color: var(--ad-dim);
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: .9rem;
+}
+.ad-tabs button.on { background: var(--ad-accent); border-color: var(--ad-accent); color: #fff; }
+
+/* ── Bagian ── */
+.ad-sections { display: flex; flex-direction: column; gap: 18px; padding-top: 14px; }
+.ad-sec {
+  background: var(--ad-panel);
+  border: 1px solid var(--ad-line);
+  border-radius: 14px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ad-sec > h3 {
+  margin: 0;
+  font-size: 1.02rem;
+  color: var(--ad-accent);
+  letter-spacing: .01em;
+}
+.ad-sec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ad-sec-head h3 { margin: 0; }
+
+/* ── Field ── */
+.ad-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ad-label {
+  font-size: .74rem;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--ad-dim);
+}
+.ad-field input,
+.ad-field textarea,
+.ad-field select {
+  background: var(--ad-bg);
+  border: 1px solid var(--ad-line);
+  color: var(--ad-text);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: .92rem;
+  width: 100%;
+  resize: vertical;
+}
+.ad-field input:focus,
+.ad-field textarea:focus,
+.ad-field select:focus {
+  outline: 2px solid var(--ad-accent);
+  outline-offset: -1px;
+}
+.ad-hint { font-size: .74rem; color: var(--ad-dim); }
+.ad-narrow input { max-width: 180px; }
+
+.ad-grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.ad-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.ad-grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+.ad-note {
+  margin: 0;
+  font-size: .82rem;
+  color: var(--ad-dim);
+  line-height: 1.65;
+}
+.ad-note code {
+  background: var(--ad-panel2);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: .78rem;
+}
+
+/* ── Daftar baris ── */
+.ad-list { display: flex; flex-direction: column; gap: 8px; }
+.ad-list-row { display: flex; gap: 8px; align-items: center; }
+.ad-list-row input { flex: 1; }
+
+.ad-repeat { display: flex; flex-direction: column; gap: 12px; }
+.ad-card {
+  background: var(--ad-panel2);
+  border: 1px solid var(--ad-line);
+  border-radius: 11px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.ad-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: .87rem;
+  color: var(--ad-text);
+}
+
+/* ── Tombol ── */
+.ad-primary {
+  background: var(--ad-accent);
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 22px;
+  font: inherit;
+  font-weight: 600;
+  font-size: .92rem;
+  cursor: pointer;
+}
+.ad-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+.ad-add {
+  background: transparent;
+  border: 1px dashed var(--ad-line);
+  color: var(--ad-dim);
+  border-radius: 9px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: .84rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.ad-add:hover:not(:disabled) { border-color: var(--ad-accent); color: var(--ad-accent); }
+.ad-add:disabled { opacity: .5; cursor: not-allowed; }
+
+.ad-toggle {
+  background: var(--ad-panel2);
+  border: 1px solid var(--ad-line);
+  color: var(--ad-text);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font: inherit;
+  font-size: .82rem;
+  cursor: pointer;
+}
+.ad-del {
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, .45);
+  color: var(--ad-bad);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font: inherit;
+  font-size: .82rem;
+  cursor: pointer;
+}
+.ad-x {
+  background: transparent;
+  border: 1px solid var(--ad-line);
+  color: var(--ad-dim);
+  border-radius: 7px;
+  width: 30px;
+  height: 30px;
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  flex: none;
+}
+.ad-x:hover { color: var(--ad-bad); border-color: var(--ad-bad); }
+
+.ad-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ad-file {
+  font-size: .84rem;
+  color: var(--ad-dim);
+  max-width: 100%;
+}
+.ad-file::file-selector-button {
+  background: var(--ad-panel2);
+  border: 1px solid var(--ad-line);
+  color: var(--ad-text);
+  border-radius: 8px;
+  padding: 7px 13px;
+  margin-right: 10px;
+  cursor: pointer;
+  font: inherit;
+}
+
+/* ── Pesan ── */
+.ad-msg {
+  margin: 0;
+  padding: 11px 15px;
+  border-radius: 10px;
+  font-size: .87rem;
+  line-height: 1.6;
+  border: 1px solid var(--ad-line);
+  background: var(--ad-panel);
+}
+.ad-msg.ok   { border-color: rgba(79, 194, 168, .5); color: var(--ad-ok); }
+.ad-msg.bad  { border-color: rgba(255, 107, 107, .5); color: var(--ad-bad); }
+.ad-msg.info { border-color: rgba(255, 45, 120, .4);  color: #ffb3cd; }
+
+/* ── Media ── */
+.ad-group { display: flex; flex-direction: column; gap: 12px; }
+.ad-group h4 {
+  margin: 0;
+  font-size: .93rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ad-group h4 em {
+  font-style: normal;
+  font-size: .74rem;
+  background: var(--ad-panel2);
+  border: 1px solid var(--ad-line);
+  border-radius: 999px;
+  padding: 1px 9px;
+  color: var(--ad-dim);
+}
+
+.ad-media-grid { display: flex; flex-direction: column; gap: 10px; }
+.ad-media {
+  background: var(--ad-panel2);
+  border: 1px solid var(--ad-line);
+  border-radius: 11px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.ad-media-top { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; }
+.ad-media-top > img {
+  width: 76px;
+  height: 76px;
+  object-fit: cover;
+  border-radius: 9px;
+  border: 1px solid var(--ad-line);
+  flex: none;
+  background: var(--ad-bg);
+}
+.ad-media-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.ad-media-info b { font-size: .89rem; }
+.ad-media-info small { color: var(--ad-dim); font-size: .76rem; }
+.ad-url {
+  font-size: .72rem;
+  color: var(--ad-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.ad-media-btns { display: flex; gap: 7px; flex-wrap: wrap; }
+.ad-media-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ad-line);
+}
+
+/* ── Simpan ── */
+.ad-save {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent, var(--ad-bg) 32%);
+  padding: 34px 20px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Responsif ── */
+@media (max-width: 720px) {
+  .ad-grid2, .ad-grid3, .ad-grid4 { grid-template-columns: 1fr; }
+  .ad-sec { padding: 16px; }
+}
