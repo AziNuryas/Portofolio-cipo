@@ -44,50 +44,32 @@ body {
 ::-moz-selection { background: var(--rose); color: #fff; }
 h1, h2, h3, .serif { font-family: var(--font-serif); }
 a { text-decoration: none; color: inherit; }
+
+/* Elemen yang bisa diklik memakai kursor tangan — ini kursor sistem
+   bawaan browser, bukan kursor kustom. Teks isian tetap kursor teks. */
+a,
+button,
+label,
+select,
+summary,
+[role="button"],
+[role="tab"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"] { cursor: pointer; }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+input[type="search"],
+input[type="password"],
+input:not([type]),
+textarea { cursor: text; }
+
 img { max-width: 100%; display: block; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
-
-/* ================================================
-   CUSTOM CURSOR
-   Kursor asli dimatikan HANYA setelah JS mengaktifkan
-   kursor kustom (html.custom-cursor). Kalau JS gagal atau
-   perangkatnya touch, kursor sistem tetap normal.
-================================================ */
-html.custom-cursor,
-html.custom-cursor a,
-html.custom-cursor button,
-html.custom-cursor label,
-html.custom-cursor .bento-card,
-html.custom-cursor .cert-card,
-html.custom-cursor .contact-links > a { cursor: none; }
-html.custom-cursor input,
-html.custom-cursor textarea,
-html.custom-cursor select { cursor: text; }
-
-.cursor-dot {
-  position: fixed;
-  top: 0; left: 0;
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--rose-deep);
-  pointer-events: none; z-index: 2147483647 !important;
-  will-change: transform;
-  opacity: 0;
-  transition: width .3s ease, height .3s ease, background .3s ease, opacity .2s ease;
-}
-.cursor-ring {
-  position: fixed;
-  top: 0; left: 0;
-  width: 40px; height: 40px; border-radius: 50%;
-  border: 2px solid var(--rose-deep);
-  pointer-events: none; z-index: 2147483647 !important;
-  will-change: transform;
-  opacity: 0;
-  transition: width .4s ease, height .4s ease, opacity .3s ease, border-color .3s ease;
-}
-.cursor-dot.is-visible  { opacity: 1; }
-.cursor-ring.is-visible { opacity: .65; }
-body.cursor-active .cursor-dot  { width: 12px; height: 12px; background: var(--rose); }
-body.cursor-active .cursor-ring { width: 58px; height: 58px; opacity: .3; border-color: var(--rose); }
 
 /* ================================================
    NOISE TEXTURE OVERLAY
@@ -945,8 +927,3 @@ footer {
   footer { padding: 28px 20px; font-size: .72rem; text-align: center; }
 }
 
-/* Kursor kustom hanya aktif di perangkat berkursor presisi (mouse/trackpad).
-   Di layar sentuh, kursor sistem yang dipakai. */
-@media (pointer: coarse) {
-  .cursor-dot, .cursor-ring { display: none !important; }
-}

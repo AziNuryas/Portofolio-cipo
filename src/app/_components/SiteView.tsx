@@ -58,8 +58,6 @@ export default function SiteView({
   media: SiteMedia[];
 }) {
   const initialized = useRef(false);
-  const cursorDot  = useRef<HTMLDivElement>(null);
-  const cursorRing = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState({ nama: "", pesan: "" });
 
   /* Semua isi visual bersumber dari database + default lokal. */
@@ -80,55 +78,6 @@ export default function SiteView({
     if (initialized.current) return;
     initialized.current = true;
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
-    /* ═══ CUSTOM CURSOR ═══ */
-    // Kursor sistem hanya dimatikan setelah kursor kustom benar-benar siap
-    // (html.custom-cursor). Kalau JS gagal atau perangkatnya layar sentuh,
-    // kursor asli tetap normal — tidak ada halaman tanpa kursor.
-    const dot  = cursorDot.current;
-    const ring = cursorRing.current;
-    const finePointer = window.matchMedia("(pointer: fine)").matches;
-
-    let centered = false;
-    let revealed = false;
-
-    const moveCursor = (e: MouseEvent) => {
-      if (!dot || !ring) return;
-
-      if (!centered) {
-        centered = true;
-        gsap.set([dot, ring], { xPercent: -50, yPercent: -50 });
-        // Snap ke posisi mouse saat pertama kali bergerak, supaya tidak
-        // terlihat meleset dari pojok kiri atas.
-        gsap.set(dot,  { x: e.clientX, y: e.clientY });
-        gsap.set(ring, { x: e.clientX, y: e.clientY });
-        if (finePointer) document.documentElement.classList.add("custom-cursor");
-      }
-      if (!revealed) {
-        revealed = true;
-        dot.classList.add("is-visible");
-        ring.classList.add("is-visible");
-      }
-
-      gsap.to(dot,  { x: e.clientX, y: e.clientY, duration: 0.08, ease: "none",       overwrite: "auto" });
-      gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.25, ease: "power2.out", overwrite: "auto" });
-    };
-
-    const hideCursor = () => {
-      dot?.classList.remove("is-visible");
-      ring?.classList.remove("is-visible");
-    };
-
-    window.addEventListener("mousemove", moveCursor);
-    document.documentElement.addEventListener("mouseleave", hideCursor);
-
-    const hoverTargets = document.querySelectorAll("a, button, .bento-card, .cert-card");
-    const activate   = () => document.body.classList.add("cursor-active");
-    const deactivate = () => document.body.classList.remove("cursor-active");
-    hoverTargets.forEach(el => {
-      el.addEventListener("mouseenter", activate);
-      el.addEventListener("mouseleave", deactivate);
-    });
 
     /* ═══ LOADER ═══ */
     const loaderPath = document.getElementById("loader-path") as SVGPathElement | null;
@@ -281,16 +230,6 @@ export default function SiteView({
         if (id && id.length > 1) { e.preventDefault(); gsap.to(window, { duration: 1.1, scrollTo: { y: id, offsetY: 70 }, ease: "power2.inOut" }); }
       });
     });
-
-    return () => {
-      window.removeEventListener("mousemove", moveCursor);
-      document.documentElement.removeEventListener("mouseleave", hideCursor);
-      hoverTargets.forEach(el => {
-        el.removeEventListener("mouseenter", activate);
-        el.removeEventListener("mouseleave", deactivate);
-      });
-      document.documentElement.classList.remove("custom-cursor");
-    };
   }, []);
 
   const openMenu = () => {
@@ -308,10 +247,6 @@ export default function SiteView({
 
   return (
     <>
-      {/* Custom cursor */}
-      <div className="cursor-dot"  ref={cursorDot}  />
-      <div className="cursor-ring" ref={cursorRing} />
-
       {/* ── LOADER ── */}
       <div id="loader">
         <svg viewBox="0 0 220 60">
