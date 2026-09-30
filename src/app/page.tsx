@@ -195,7 +195,7 @@ export default function Home() {
     gsap.to("#tl-fill", { height: "100%", ease: "none", scrollTrigger: { trigger: ".timeline", start: "top 72%", end: "bottom 68%", scrub: .7 } });
 
     /* ═══ BENTO GALLERY ═══ */
-    gsap.from(".bento-card", { y: 60, opacity: 0, duration: .7, stagger: .08, ease: "power3.out", scrollTrigger: { trigger: ".bento-grid", start: "top 82%" } });
+    gsap.from(".bento-card", { y: 60, opacity: 0, duration: .7, stagger: .08, ease: "power3.out", clearProps: "transform", scrollTrigger: { trigger: ".bento-grid", start: "top 82%" } });
 
     /* ═══ SECTION HEADERS ═══ */
     gsap.utils.toArray<HTMLElement>(".sec-head").forEach(head => {
