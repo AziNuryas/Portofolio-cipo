@@ -10,11 +10,11 @@ const WHATSAPP_NUMBER = "6289697007035";
 
 /* ─── Data ─── */
 const EXPERIENCES = [
-  { date: "Juni – Juli 2025", title: "RSUD Indramayu · Rawat Inap", items: ["Asuhan keperawatan komprehensif pada pasien rawat inap", "Observasi tanda vital & intervensi sesuai rencana tindakan"] },
-  { date: "Agustus 2025", title: "RSUD Bayu Asih · IGD & ICU", items: ["Triase & tindakan awal kegawatdaruratan", "Pertolongan cepat sesuai standar BTCLS"] },
-  { date: "Agt – Sep 2025", title: "RPSLU Pucang Gading, Semarang", items: ["Asuhan keperawatan pada lansia dengan penyakit klinis", "Perawatan dan pendampingan pasien lansia sehari-hari"] },
-  { date: "September 2025", title: "RSJ Provinsi Jawa Barat", items: ["Asuhan pasien gangguan jiwa", "Fasilitator Terapi Aktivitas Kelompok (TAK)"] },
-  { date: "Okt – Des 2025", title: "RSD Gunung Jati, Cirebon · Maternitas", items: ["Asuhan maternitas: ANC, INC, dan PNC", "Asisten persalinan & persiapan operasi sesuai SOP"] },
+  { date: "Juni – Juli 2025", title: "RSUD Indramayu · Rawat Inap", items: ["Asuhan keperawatan komprehensif kepada pasien rawat inap", "Observasi tanda vital dan tindakan intervensi sesuai rencana asuhan"] },
+  { date: "Agustus 2025", title: "RSUD Bayu Asih · IGD & ICU", items: ["Triase dan tindakan awal pada pasien kegawatdaruratan", "Penanganan kegawatdaruratan sesuai standar BTCLS"] },
+  { date: "Agustus – September 2025", title: "RPSLU Pucang Gading, Semarang", items: ["Asuhan keperawatan pada pasien geriatric dengan penyakit klinis kronis", "Pendampingan aktivitas harian dan pemantauan berkala"] },
+  { date: "September 2025", title: "RSJ Provinsi Jawa Barat", items: ["Asuhan keperawatan pada pasien gangguan jiwa", "Fasilitator Terapi Aktivitas Kelompok (TAK)"] },
+  { date: "Oktober – Desember 2025", title: "RSD Gunung Jati, Cirebon · Maternitas", items: ["Asuhan maternitas pada ANC, INC, dan PNC", "Asisten persalinan dan persiapan prosedur operasi sesuai SOP"] },
 ];
 
 const GALLERY = [
@@ -37,21 +37,52 @@ export default function Home() {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     /* ═══ CUSTOM CURSOR ═══ */
+    // Kursor sistem hanya dimatikan setelah kursor kustom benar-benar siap
+    // (html.custom-cursor). Kalau JS gagal atau perangkatnya layar sentuh,
+    // kursor asli tetap normal — tidak ada halaman tanpa kursor.
     const dot  = cursorDot.current;
     const ring = cursorRing.current;
-    if (dot && ring) {
-      // Set xPercent/yPercent once to center the elements on the mouse point
-      gsap.set(dot,  { xPercent: -50, yPercent: -50 });
-      gsap.set(ring, { xPercent: -50, yPercent: -50 });
-    }
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+
+    let centered = false;
+    let revealed = false;
+
     const moveCursor = (e: MouseEvent) => {
-      if (dot)  gsap.to(dot,  { x: e.clientX, y: e.clientY, duration: 0.08, ease: "none",        overwrite: "auto" });
-      if (ring) gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.25, ease: "power2.out",  overwrite: "auto" });
+      if (!dot || !ring) return;
+
+      if (!centered) {
+        centered = true;
+        gsap.set([dot, ring], { xPercent: -50, yPercent: -50 });
+        // Snap ke posisi mouse saat pertama kali bergerak, supaya tidak
+        // terlihat meleset dari pojok kiri atas.
+        gsap.set(dot,  { x: e.clientX, y: e.clientY });
+        gsap.set(ring, { x: e.clientX, y: e.clientY });
+        if (finePointer) document.documentElement.classList.add("custom-cursor");
+      }
+      if (!revealed) {
+        revealed = true;
+        dot.classList.add("is-visible");
+        ring.classList.add("is-visible");
+      }
+
+      gsap.to(dot,  { x: e.clientX, y: e.clientY, duration: 0.08, ease: "none",       overwrite: "auto" });
+      gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.25, ease: "power2.out", overwrite: "auto" });
     };
+
+    const hideCursor = () => {
+      dot?.classList.remove("is-visible");
+      ring?.classList.remove("is-visible");
+    };
+
     window.addEventListener("mousemove", moveCursor);
-    document.querySelectorAll("a, button, .bento-card, .cert-card").forEach(el => {
-      el.addEventListener("mouseenter", () => document.body.classList.add("cursor-active"));
-      el.addEventListener("mouseleave", () => document.body.classList.remove("cursor-active"));
+    document.documentElement.addEventListener("mouseleave", hideCursor);
+
+    const hoverTargets = document.querySelectorAll("a, button, .bento-card, .cert-card");
+    const activate   = () => document.body.classList.add("cursor-active");
+    const deactivate = () => document.body.classList.remove("cursor-active");
+    hoverTargets.forEach(el => {
+      el.addEventListener("mouseenter", activate);
+      el.addEventListener("mouseleave", deactivate);
     });
 
     /* ═══ LOADER ═══ */
@@ -206,7 +237,15 @@ export default function Home() {
       });
     });
 
-    return () => window.removeEventListener("mousemove", moveCursor);
+    return () => {
+      window.removeEventListener("mousemove", moveCursor);
+      document.documentElement.removeEventListener("mouseleave", hideCursor);
+      hoverTargets.forEach(el => {
+        el.removeEventListener("mouseenter", activate);
+        el.removeEventListener("mouseleave", deactivate);
+      });
+      document.documentElement.classList.remove("custom-cursor");
+    };
   }, []);
 
   const openMenu = () => {
@@ -255,7 +294,7 @@ export default function Home() {
             <li key={id}><a href={`#${id}`} data-nav={id}>{label}</a></li>
           ))}
         </ul>
-        <a href="#contact" className="nav-cta">hubungi →</a>
+        <a href="#contact" className="nav-cta">Hubungi →</a>
         <button id="burger" aria-label="menu" onClick={openMenu}><span /></button>
       </nav>
 
@@ -288,7 +327,7 @@ export default function Home() {
         </svg>
 
         <div className="wrap hero-inner" style={{ position: 'relative', left: '-8%' }}>
-          <span className="eyebrow">Nursing Professional · D3 Keperawatan</span>
+          <span className="eyebrow">Perawat Profesional · Lulusan D3 Keperawatan</span>
           <h1 className="hero-name" style={{ perspective: "800px" }}>
             {"Nabilah".split("").map((c, i) => <span key={i} className="char">{c}</span>)}
             {" "}{"Aisha".split("").map((c, i) => <span key={`a${i}`} className="char">{c}</span>)}
@@ -298,11 +337,11 @@ export default function Home() {
             </span>
           </h1>
           <p className="hero-sub" data-reveal="true">
-            Calon perawat profesional yang siap jaga shift malam demi senyum pasien. 💖 Punya jam terbang di 5 unit berbeda—dari ritme cepat IGD sampai tenangnya Maternitas. <i>Skill</i> medikal mantap, komunikasi <i>on point</i>, dan selalu berdedikasi tinggi!
+            Perawat berijazah D3 dengan pengalaman praktik klinik di lima unit layanan kesehatan — dari kegawatdaruratan IGD &amp; ICU, rawat inap, dan psikiatri, hingga maternitas serta geriatri. Terlatih menjalankan shift panjang dengan standar prosedur yang konsisten, mendokumentasikan tindakan secara akurat, dan membangun komunikasi terapeutik yang efektif dengan pasien maupun tim medis.
           </p>
           <div className="hero-actions">
-            <a href="#gallery" className="btn btn-solid">Jelajahi Momen ↓</a>
-            <a href="#contact" className="btn btn-ghost">Yuk Connect!</a>
+            <a href="#experience" className="btn btn-solid">Lihat Rekam Jejak ↓</a>
+            <a href="#contact" className="btn btn-ghost">Hubungi Saya</a>
           </div>
         </div>
 
@@ -349,12 +388,12 @@ export default function Home() {
           <div className="about-text">
             <span className="eyebrow">01 — Tentang saya</span>
             <h2 className="serif" style={{ fontSize: "clamp(1.9rem,3.6vw,2.8rem)", margin: "18px 0 24px", fontWeight: 600 }}>
-              Merawat bukan cuma tugas,<br/>tapi <i>passion</i> saya.
+              Asuhan yang akurat,<br/>komunikasi yang <i>manusiawi</i>.
             </h2>
-            <p data-reveal="true">Saya terbiasa menangani asuhan keperawatan dengan ritme <i>fast-paced</i> namun tetap mengutamakan ketelitian ekstra. Berbekal jam terbang di berbagai institusi rumah sakit top, saya sudah terbiasa dengan lingkungan medis yang dinamis.</p>
-            <p data-reveal="true">Mulai dari cek TTV, komunikasi terapeutik dengan pasien, sampai asuhan keperawatan dan edukasi kesehatan—semua saya jalankan sesuai standar. Intinya: profesional, disiplin, teliti, dan selalu siap kerja kolaboratif bareng tim medis lain.</p>
+            <p data-reveal="true">Saya menjalankan asuhan keperawatan dengan ketelitian tinggi di lingkungan yang serba cepat: mengukur dan menafsirkan tanda vital, mengambil keputusan klinis dalam waktu terbatas, serta menyusun dokumentasi yang dapat ditelusuri kembali. Lima penempatan klinis membiasakan saya bekerja dengan standar yang seragam dan di bawah tekanan operasional nyata.</p>
+            <p data-reveal="true">Selain kompetensi teknis, saya menempatkan porsi besar pada hal yang paling sering membentuk pengalaman pasien: komunikasi terapeutik, edukasi kesehatan yang mudah dipahami, dan kolaborasi lintas profesi. Perawat adalah titik kontak pertama pasien dengan sistem layanan kesehatan — karena itu kejelasan dan kelembutan dalam menjelaskan adalah bagian dari pekerjaan, bukan pelengkap.</p>
             <div className="skill-chips" data-reveal="true">
-              {["Basic Nursing","Komunikasi Terapeutik","Patient Care","Manajemen Waktu","Problem Solving","Teamwork","BTCLS","Fotografi"].map(s => <span key={s}>{s}</span>)}
+              {["Asuhan Keperawatan","Komunikasi Terapeutik","Edukasi Kesehatan","Dokumentasi Asuhan","Manajemen Waktu & Prioritas","Penyelesaian Masalah","Kolaborasi Tim","Penanganan Kegawatdaruratan (BTCLS)"].map(s => <span key={s}>{s}</span>)}
             </div>
           </div>
         </div>
@@ -373,7 +412,7 @@ export default function Home() {
               <h3>D3 Keperawatan</h3>
               <span className="edu-school">Politeknik Negeri Indramayu (Polindra)</span>
               <span className="edu-year">2023 – 2026</span>
-              <p>Lulusan dengan IPK Terbaik (3.66). Aktif dalam berbagai organisasi kemahasiswaan dan mendapatkan pengalaman klinis langsung di 5 unit rumah sakit besar.</p>
+              <p>Lulusan dengan IPK 3.66. Aktif dalam tiga organisasi kemahasiswaan dan telah menyelesaikan praktik klinik di lima institusi layanan kesehatan.</p>
             </div>
             <div className="edu-stamp">LULUS</div>
           </div>
@@ -403,7 +442,7 @@ export default function Home() {
           <div className="sec-head">
             <span className="eyebrow">03 — Rekam jejak klinik</span>
             <h2>Pengalaman Praktik Klinik</h2>
-            <p>Lima penempatan, lima unit berbeda — dari kegawatdaruratan sampai maternitas.</p>
+            <p>Lima penempatan klinis di lima unit berbeda — mulai dari kegawatdaruratan dan rawat inap hingga maternitas, geriatri, dan psikiatri.</p>
           </div>
           <div className="timeline">
             <div className="tl-track"><i id="tl-fill" /></div>
@@ -501,9 +540,9 @@ export default function Home() {
       <section id="contact">
         <div className="wrap">
           <div className="sec-head">
-            <span className="eyebrow">06 — Mari terhubung</span>
-            <h2>Terbuka untuk <i>opportunity</i><br/>kerja &amp; magang!</h2>
-            <p>Yuk <i>connect</i>! Boleh DM IG, kirim pesan via form, atau langsung klik kontak di bawah.</p>
+            <span className="eyebrow">06 — Kontak</span>
+            <h2>Tersedia untuk<br/><i>Peluang Karier</i> Anda</h2>
+            <p>Di fasilitas kesehatan, rumah sakit, klinik, maupun layanan medis lainnya. Hubungi langsung lewat WhatsApp, email, atau Instagram — saya akan membalas segera.</p>
           </div>
           <div className="contact-grid">
             {/* Links */}
@@ -555,7 +594,7 @@ export default function Home() {
       {/* FOOTER */}
       <footer>
         © 2026 NABILAH AISHA SYAHADA<br/>
-        Dibuat dengan ❤ untuk dunia kesehatan
+        Perawat D3 Keperawatan · Polindra · Indramayu
       </footer>
     </>
   );

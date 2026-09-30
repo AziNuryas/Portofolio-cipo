@@ -26,7 +26,7 @@
    BASE RESET
 ================================================ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; cursor: none; }
+html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-sans);
   background: var(--blush);
@@ -37,13 +37,27 @@ body {
 ::selection { background: var(--rose); color: #fff; }
 ::-moz-selection { background: var(--rose); color: #fff; }
 h1, h2, h3, .serif { font-family: var(--font-serif); }
-a { text-decoration: none; color: inherit; cursor: none; }
+a { text-decoration: none; color: inherit; }
 img { max-width: 100%; display: block; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
 
 /* ================================================
    CUSTOM CURSOR
+   Kursor asli dimatikan HANYA setelah JS mengaktifkan
+   kursor kustom (html.custom-cursor). Kalau JS gagal atau
+   perangkatnya touch, kursor sistem tetap normal.
 ================================================ */
+html.custom-cursor,
+html.custom-cursor a,
+html.custom-cursor button,
+html.custom-cursor label,
+html.custom-cursor .bento-card,
+html.custom-cursor .cert-card,
+html.custom-cursor .contact-links > a { cursor: none; }
+html.custom-cursor input,
+html.custom-cursor textarea,
+html.custom-cursor select { cursor: text; }
+
 .cursor-dot {
   position: fixed;
   top: 0; left: 0;
@@ -51,7 +65,8 @@ img { max-width: 100%; display: block; }
   background: var(--rose-deep);
   pointer-events: none; z-index: 2147483647 !important;
   will-change: transform;
-  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease;
+  opacity: 0;
+  transition: width .3s ease, height .3s ease, background .3s ease, opacity .2s ease;
 }
 .cursor-ring {
   position: fixed;
@@ -60,11 +75,13 @@ img { max-width: 100%; display: block; }
   border: 2px solid var(--rose-deep);
   pointer-events: none; z-index: 2147483647 !important;
   will-change: transform;
-  opacity: 0.65;
-  transition: width 0.4s ease, height 0.4s ease, opacity 0.3s ease, border-color 0.3s ease;
+  opacity: 0;
+  transition: width .4s ease, height .4s ease, opacity .3s ease, border-color .3s ease;
 }
+.cursor-dot.is-visible  { opacity: 1; }
+.cursor-ring.is-visible { opacity: .65; }
 body.cursor-active .cursor-dot  { width: 12px; height: 12px; background: var(--rose); }
-body.cursor-active .cursor-ring { width: 58px; height: 58px; opacity: 0.3; border-color: var(--rose); }
+body.cursor-active .cursor-ring { width: 58px; height: 58px; opacity: .3; border-color: var(--rose); }
 
 /* ================================================
    NOISE TEXTURE OVERLAY
@@ -181,7 +198,7 @@ nav .nav-cta:hover { background: var(--rose-deep); transform: scale(1.03); }
 #burger {
   display: none; width: 38px; height: 38px; border-radius: 50%;
   border: none; background: var(--rose-soft);
-  align-items: center; justify-content: center; cursor: none;
+  align-items: center; justify-content: center;
 }
 #burger span { display: block; width: 16px; height: 2px; background: var(--rose-deep); position: relative; }
 #burger span::before, #burger span::after { content: ""; position: absolute; width: 16px; height: 2px; background: var(--rose-deep); left: 0; }
@@ -207,7 +224,7 @@ nav .nav-cta:hover { background: var(--rose-deep); transform: scale(1.03); }
 #mobile-menu .close-m {
   position: absolute; top: 28px; right: 30px; color: rgba(255,251,252,.55);
   font-size: .75rem; font-family: var(--font-mono); letter-spacing: .12em;
-  cursor: none; transition: color .3s ease;
+  transition: color .3s ease;
 }
 #mobile-menu .close-m:hover { color: var(--rose); }
 
@@ -571,7 +588,7 @@ section { position: relative; padding: 140px 0; }
 }
 .bento-card {
   border-radius: 24px; overflow: hidden; position: relative;
-  cursor: none; box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm);
   border: 2px solid rgba(255,255,255,.8);
   transition: transform .5s cubic-bezier(.4,0,.2,1), box-shadow .5s ease;
 }
@@ -667,7 +684,7 @@ section { position: relative; padding: 140px 0; }
 .contact-form button {
   width: 100%; background: var(--rose); color: var(--ink);
   border: none; padding: 16px 30px; border-radius: 999px;
-  font-weight: 800; font-size: .9rem; cursor: none;
+  font-weight: 800; font-size: .9rem;
   transition: all .3s ease; position: relative; overflow: hidden;
 }
 .contact-form button:hover { background: var(--rose-deep); transform: translateY(-3px); box-shadow: 0 16px 36px -10px rgba(214,20,106,.5); }
@@ -843,8 +860,8 @@ footer {
   footer { padding: 28px 20px; font-size: .72rem; text-align: center; }
 }
 
-/* Hanya sembunyikan kursor kustom di perangkat layar sentuh (HP/Tablet) */
+/* Kursor kustom hanya aktif di perangkat berkursor presisi (mouse/trackpad).
+   Di layar sentuh, kursor sistem yang dipakai. */
 @media (pointer: coarse) {
   .cursor-dot, .cursor-ring { display: none !important; }
-  html, a, #burger { cursor: auto !important; }
 }

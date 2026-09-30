@@ -25,8 +25,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Nabilah Aisha Syahada — Mahasiswa Keperawatan",
-  description: "Portofolio Nabilah Aisha Syahada",
+  title: "Nabilah Aisha Syahada — Perawat Profesional",
+  description:
+    "Portofolio profesional Nabilah Aisha Syahada, lulusan D3 Keperawatan dengan pengalaman praktik klinik di lima institusi layanan kesehatan.",
 };
 
 export default function RootLayout({
