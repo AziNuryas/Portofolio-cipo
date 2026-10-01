@@ -1,0 +1,18 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+  # Netlify memindai build output lalu membandingkannya dengan nilai env var
+  # yang terdaftar. Var berawalan NEXT_PUBLIC_ memang sengaja tertanam di
+  # bundle browser (dibutuhkan frontend untuk bicara ke Supabase), jadi
+  # pemindaian menandainya sebagai kebocoran padahal bukan.
+  #
+  # Yang TIDAK exempted: ADMIN_TOKEN dan SUPABASE_SERVICE_ROLE_KEY.
+  # Keduanya hanya dibaca di server dan tetap diawasi pemindaian.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
