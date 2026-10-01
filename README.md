@@ -177,13 +177,35 @@ Nomor WhatsApp ada di `src/lib/content/defaults.ts` (konstanta `WHATSAPP_NUMBER`
 
 ## Deploy
 
-```bash
-npx vercel
-```
+### Netlify
 
-Tambahkan ketiga variabel Supabase dan `ADMIN_TOKEN` di **Vercel → Settings →
-Environment Variables**. Tanpa `SUPABASE_SERVICE_ROLE_KEY`, situs tetap tampil
-dengan konten bawaan tetapi panel admin tidak bisa menyimpan.
+Hubungkan repositori ke Netlify dan gunakan build command `npm run build`.
+Tambahkan ketiga variabel Supabase dan `ADMIN_TOKEN` di **Netlify → Project
+configuration → Environment variables**. Jangan menaruh nilai asli di source,
+`netlify.toml`, atau `.env.example`; berkas `.env.local` hanya untuk pengembangan
+lokal dan sudah diabaikan oleh `.gitignore`.
+
+`netlify.toml` mengecualikan hanya `NEXT_PUBLIC_SUPABASE_URL` dan
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` dari secrets scanning. Keduanya merupakan
+konfigurasi publik dan dapat muncul di output Next.js. Gunakan hanya anon atau
+publishable key untuk variabel publik tersebut, bukan service role atau secret
+key. Secrets scanning tetap aktif untuk `ADMIN_TOKEN`,
+`SUPABASE_SERVICE_ROLE_KEY`, dan nilai rahasia lainnya; jangan menonaktifkan
+scanner atau mengecualikan seluruh output build.
+
+Jika deploy masih gagal, lihat nama variabel dan lokasi berkas yang disebut
+sebelum pesan `Secrets scanning found secrets in build`. Hapus kebocoran rahasia
+di lokasi tersebut dan rotasi kredensial yang terekspos. Jika nilai pernah
+di-commit, bersihkan juga riwayat git secara terkoordinasi sebelum redeploy.
+Daftar variabel di bagian `Resolved config` saja bukan bukti kebocoran.
+
+Tanpa `SUPABASE_SERVICE_ROLE_KEY`, situs tetap tampil tetapi panel admin tidak
+bisa menyimpan. Setelah memperbarui konfigurasi, jalankan deploy ulang di Netlify.
+
+### Vercel
+
+Untuk deploy alternatif, jalankan `npx vercel` dan tambahkan ketiga variabel
+Supabase serta `ADMIN_TOKEN` di **Vercel → Settings → Environment Variables**.
 
 ## Catatan
 
